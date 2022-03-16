@@ -126,8 +126,10 @@ def comparaison(list_playlist_id, track_ids):
     df_tracks = predict_track(track_ids)
     print("playlists", df_playlist)
     print("tracks", df_tracks)
-    df_playlist['prediction'] = requests.get('http://localhost:5000/prediction', json=df_playlist.to_json()).json()
-    df_tracks['prediction'] = requests.get('http://localhost:5000/prediction', json=df_tracks.to_json()).json()
+    # df_playlist['prediction'] = requests.get('http://localhost:5000/prediction', json=df_playlist.to_json()).json()
+    # df_tracks['prediction'] = requests.get('http://localhost:5000/prediction', json=df_tracks.to_json()).json()
+    df_playlist['prediction'] = requests.get('https://wilts-model.herokuapp.com/prediction', json=df_playlist.to_json()).json()
+    df_tracks['prediction'] = requests.get('https://wilts-model.herokuapp.com/prediction', json=df_tracks.to_json()).json()
     thresh = 0.03
     liked_clusters = df_playlist['prediction'].value_counts()[
         df_playlist['prediction'].value_counts() >= thresh * len(df_playlist['prediction'])].index
