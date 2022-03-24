@@ -4,7 +4,7 @@ from prediction.predict import comparaison
 
 @app.route('/')
 def hello():
-    return("Hello world !")
+    return render_template('home.html')
 
 @app.route('/playlist_input')
 def playlist_input(playlist):
