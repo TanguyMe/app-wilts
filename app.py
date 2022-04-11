@@ -23,6 +23,8 @@ with app.test_request_context():
     print(url_for('login', next='/'))
     print(url_for('profile', username='John Doe'))
 
+if __name__ == "__main__":
+    app.run(port=8000)
 # A run dans bash
 # As a shortcut, if the file is named app.py or wsgi.py, you don’t have to set the FLASK_APP environment variable
 # export FLASK_APP=app
