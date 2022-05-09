@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+
+<h2>This is a heading</h2>
+
+<p>This is a paragraph.</p>
+<p>This is another paragraph.</p>
+
+<button>Click me to hide paragraphs</button>
+
+<form>
+<div id="main_div">
+        <div><input id="data1" type="text" name="data1" value="" /></div>
+</div>
+<div style="margin-top:15px;" ><input type="button" value="Add" onclick="AddRow1()" /></div>
+</form>
+<table id="tblTest">
+    <tr>
+        <td>
+            <input type="text" name="data1" value="TempData" />
+        </td>
+        <td>
+            <input type="button" value="Add" onclick="AddRow2()" />
+        </td>
+    </tr>
+</table>
+<div id="output"> <h1>output</h1>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $("p").append("patate");
+  });
+});
+function AddRow1() {
+  var datatest = document.getElementById('data1').value;
+  var list_outputs = [];
+  $('#output').append("<h1>" + datatest);
+  var elements = document.getElementById('output').children;
+  console.log(elements);
+  for (let i = 0; i < elements.length; i++) {
+    console.log(elements[i].lastChild);
+    list_outputs.push(elements[i].lastChild);
+    console.log(list_outputs[i]);
+  };
+  console.log(list_outputs)
+  console.log($('#output'))
+  var outputs = $('#output').text();
+  console.log(outputs)
+  console.log(outputs.length)
+  for (let i = 0; i < outputs.length; i++) {
+    console.log("output " + i +" " + outputs[i]);
+  };
+};
+
+function AddRow2() {
+                 $('#tblTest').append(
+            '<tr><td>' +
+              '<input type="text" />' +
+              '<select><option value="1">Option 1</option>' +
+                    '<option value="2">Option 2</option>' +
+                    '<option value="3">Option 3</option></select>' +
+            '</td></tr>');
+    };
+
+</script>
+</body>
+
+</html>
+
+<form method="POST" action="{{ url_for('patate') }}">
+  <select name="datasource" method="POST" action="/post">
+    {% for datasource1 in two_dimensional_list %}
+    <option value= "{{datasource1}}">{{datasource1}}</option>"
+    {% endfor %}
+  </select>
+  <button type="submit">Submit</button>
+</form>
+<p>{{desc}}</p>
+
+
+
+</body>
+
+
+<!--function Predict() {-->
+<!--  var playlists = document.getElementById('output-playlist').children;-->
+<!--  var tracks = document.getElementById('output-track').children;-->
+<!--  var list_playlists = [];-->
+<!--  var list_tracks = []-->
+<!--  console.log(playlists);-->
+<!--  for (let i = 0; i < playlists.length; i++) {-->
+<!--    list_playlists.push(playlists[i].lastChild);-->
+<!--    console.log(list_playlists[i]);-->
+<!--  };-->
+<!--  for (let i = 0; i < tracks.length; i++) {-->
+<!--    list_tracks.push(tracks[i].lastChild);-->
+<!--    console.log(list_tracks[i]);-->
+<!--  };-->
+<!--  for (let i = 0; i < tracks.length; i++) {-->
+<!--    $('#output-track #track-' + i + ' span').text('Hi I am replace');-->
+<!--    console.log("track-" + i)-->
+<!--    console.log($('.output-track h1').eq(i))-->
+<!--    var track_id = "track-"+i-->
+<!--    console.log(track_id);-->
+<!--    console.log(document.getElementById(track_id));-->
+<!--    console.log(document.getElementById("track-"+i));-->
+<!--    $('.output-track > h1').eq(1).replaceWith("<h1> PATATE </h1>");-->
+<!--    console.log(list_tracks[i])-->
+<!--    var value = "patate" + list_tracks[i]-->
+<!--    console.log(value);-->
+<!--  };-->
+
+<!--  console.log(list_playlists)-->
+<!--  console.log(list_tracks)-->
+<!--};-->
+<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
+<!--<script type=text/javascript>-->
+<!--        $(function() {-->
+<!--          $('a#test').on('click', function(e) {-->
+<!--            e.preventDefault()-->
+<!--            $.getJSON('/background_process_test',-->
+<!--                function(data) {-->
+<!--              //do nothing-->
+<!--            });-->
+<!--            return false;-->
+<!--          });-->
+<!--        });-->
+<!--</script>-->
+
+
+<!--//button-->
+<!--<div class='container'>-->
+<!--    <h3>Test</h3>-->
+<!--        <form>-->
+<!--            <a href=# id=test><button class='btn btn-default'>Test</button></a>-->
+<!--        </form>-->
+
+<!--</div>-->

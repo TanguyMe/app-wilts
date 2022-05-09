@@ -1,3 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}
+Wilts - Prediction
+{% endblock  %}
+
+
+{% block content %}
+</head>
+<body>
+<h1 class="text-center text-success">
+  <br/>Welcome to Wilts
+</h1>
+<h3 class="text-center text-success">
+    <br/>Tool to predict if you will like a song<br/><br/>
+    Chose your option:
+</h3>
+<div class="align-items-center" style="display: flex; justify-content: space-around">
+    <a type="button" class="btn btn-success button-home" href="unlogged">Continue Unlogged</a>
+    <a type="button" class="btn btn-success button-home" href="login">Log in Spotify</a>
+</div>
+</body>
+</html>
+{% endblock %}
+
+
+
+
+<!--<div class="vline">-->
+<!--</div>-->
+<!--<h1 class="text-center text-success">-->
+<!--  <br/>Welcome to Wilts-->
+<!--</h1>-->
+<!--<h3 class="text-center text-success">-->
+<!--    <br/>Tool to predict if you will like a song<br/><br/>-->
+<!--    Chose your option:-->
+<!--</h3>-->
+<!--<div class="clearfix">-->
+<!--    <div class="col float-left" style="width: 50%;">-->
+<!--        <h1> gauche</h1>-->
+<!--    </div>-->
+<!--    <div class="col float-left" style="width: 50%;">-->
+<!--        <h1> droite</h1>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="clearfix">-->
+<!--    <div class="container">-->
+<!--      <div class="row">-->
+<!--        <div class="col">-->
+<!--          <a type="button" class="btn btn-success button-home" href="unlogged">Continue Unlogged</a>-->
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--          <a type="button" class="btn btn-success button-home" href="#">Log in Spotify</a>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="align-items-center" style="display: flex; justify-content: space-around">-->
+<!--    <a type="button" class="btn btn-success button-home" href="unlogged">Continue Unlogged</a>-->
+<!--    <a type="button" class="btn btn-success button-home" href="#">Log in Spotify</a>-->
+<!--</div>-->
+<!--<div class="clearfix">-->
+<!--     <a type="button" class="btn btn-success button-home" href="unlogged">Continue Unlogged</a>-->
+<!--     <a type="button" class="btn btn-success button-home" href="#">Log in Spotify</a>-->
+<!--</div>-->
+
+
+<!--<style>-->
+<!--.homebox {-->
+<!--  box-sizing: border-box;-->
+<!--  display: flex;-->
+<!--  justify-content: center;-->
+<!--  align-items: center;-->
+<!--  background: rgba(60,127,87,1);-->
+<!--  width: 100%;-->
+<!--  height: 250px;-->
+<!--  color: #ffffff;-->
+<!--  font-family: Roboto;-->
+<!--  font-weight: SemiBold;-->
+<!--  font-size: 300%;-->
+<!--  opacity: 1;-->
+<!--  margin-left: auto;-->
+<!--  margin-right: auto;-->
+<!--}-->
+<!--#col-1 {-->
+<!--  box-sizing: border-box;-->
+<!--  position: relative;-->
+<!--  text-decoration: none;-->
+<!--  width: 40%;-->
+<!--  float: left;-->
+<!--  height: 100%;-->
+<!--  background-color: rgba(60,127,87,1);-->
+<!--  border-radius: 50px;-->
+<!--  padding: 20px;-->
+<!--  margin: 5%;-->
+<!--  z-index: 1010101010-->
+<!--}-->
+
+<!--#col-2 {-->
+<!--  box-sizing: border-box;-->
+<!--  position: relative;-->
+<!--  text-decoration: none;-->
+<!--  width: 40%;-->
+<!--  float: left;-->
+<!--  height: 100%;-->
+<!--  background-color:  rgba(60,127,87,1);-->
+<!--  border-radius: 50px;-->
+<!--  padding: 20px;-->
+<!--  margin: 5%;-->
+<!--  padding: 20px;-->
+<!--  z-index: 1010101010-->
+<!--}-->
+<!--</style>-->
+<!--<table style="width:100%">-->
+<!--    <tbody>-->
+<!--        <tr>-->
+<!--            <td class=" btn-warning" ng-click="Cancel()"  aria-haspopup="true" aria-expanded="false" style="width:50%;text-align:center;padding:10px 0 10px 0;cursor:pointer">-->
+<!--                <font size="6">Cancel</font>-->
+<!--            </td>-->
+<!--            <td class=" btn-success" ng-click="Proceed()" aria-haspopup="true" aria-expanded="false" style="width:50%;text-align:center;padding:10px 0 10px 0;cursor:pointer" href="#">-->
+<!--                <font size="6">Proceed</font>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--    </tbody>-->
+<!--</table>-->
+<!--<div class="row">-->
+<!--    <div class="col-md-6">-->
+<!--        <button class="btn btn-warning btn-block">Cancel</button>-->
+<!--    </div>-->
+<!--    <div class="col-md-6">-->
+<!--        <button class="btn btn-success btn-block">Proceed</button>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div align="center">-->
+<!--   <div class="row">-->
+<!--     <div class="col-md-6">-->
+<!--        <button type="button" class="btn btn-warning" ng-click="Cancel()"  aria-haspopup="true" aria-expanded="false" style="width:50%"><font size="6">Cancel</font></button>-->
+<!--     </div>-->
+<!--    <div class="col-md-6">-->
+<!--         <button type="button" class="btn btn-success" ng-click="Proceed()" aria-haspopup="true" aria-expanded="false" style="width:50%"><font size="6">Proceed</font></button>-->
+<!--     </div>-->
+<!--</div>-->
+<!--<div class="d-grid gap-2">-->
+<!--  <button class="btn btn-primary" type="button">Button</button>-->
+<!--  <button class="btn btn-primary" type="button">Button</button>-->
+<!--</div>-->
+<!--<a id="col-1" href="unlogged">-->
+<!--  <p class="homebox" >Continue Unlogged</p>-->
+<!--</a>-->
+<!--<a id="col-2" href="#">-->
+<!--  <p class="homebox">Log in Spotify</p>-->
+<!--</a>-->
+
+<!--<div class="d-grid d-md-block col-6">-->
+<!--  <button class="btn btn-primary" type="button">Button</button>-->
+<!--  <button class="btn btn-primary" type="button">Button</button>-->
+<!--</div>-->
+<!--<div class="container gap-2">-->
+<!--  <div class="row">-->
+<!--    <a class="col bg-success" href="#">-->
+<!--      Column-->
+<!--    </a>-->
+<!--    <div class="col bg-light">-->
+<!--      Column-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<div class="columns">-->
+<!--  <p class="column is-primary">-->
+<!--    <a class="column" href="#">-->
+<!--      First column-->
+<!--    </a>-->
+<!--  </p>-->
+<!--&lt;!&ndash;    <button class="button is-success">&ndash;&gt;-->
+<!--&lt;!&ndash;    Button&ndash;&gt;-->
+<!--&lt;!&ndash;    </button>&ndash;&gt;-->
+<!--  <div class="column">-->
+<!--    Second column-->
+<!--  </div>-->
+<!--</div>-->
+<!--  <button class="button is-success">-->
+<!--    Button-->
+<!--  </button>-->
+<!--  <button class="button is-success">-->
+<!--    Button-->
+<!--  </button>-->
+
+
+
 <!--<!DOCTYPE html>-->
 <!--<html>-->
 <!--<head>-->
@@ -17,54 +206,54 @@
 <!--</html>-->
 
 
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-.homebox {
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(60,127,87,1);
-  width: 500px;
-  height: 250px;
-  color: #ffffff;
-  font-family: Roboto;
-  font-weight: SemiBold;
-  font-size: 48px;
-  opacity: 1;
-  margin-left: auto;
-  margin-right: auto;
-}
-#col-1 {
-  position: relative;
-  width: 50%;
-  float: left;
-  height: 100%;
-  background-color: #282828;
-  z-index: 1010101010
-}
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--<style>-->
+<!--.homebox {-->
+<!--  box-sizing: border-box;-->
+<!--  display: flex;-->
+<!--  justify-content: center;-->
+<!--  align-items: center;-->
+<!--  background: rgba(60,127,87,1);-->
+<!--  width: 500px;-->
+<!--  height: 250px;-->
+<!--  color: #ffffff;-->
+<!--  font-family: Roboto;-->
+<!--  font-weight: SemiBold;-->
+<!--  font-size: 48px;-->
+<!--  opacity: 1;-->
+<!--  margin-left: auto;-->
+<!--  margin-right: auto;-->
+<!--}-->
+<!--#col-1 {-->
+<!--  position: relative;-->
+<!--  width: 50%;-->
+<!--  float: left;-->
+<!--  height: 100%;-->
+<!--  background-color: #282828;-->
+<!--  z-index: 1010101010-->
+<!--}-->
 
-#col-2 {
-  position: relative;
-  width: 50%;
-  float: left;
-  height: 100%;
-  background-color: #0080ff;
-  z-index: 1010101010
-}
-</style>
-</head>
-<body>
-<div id="col-1">
-  <div class="homebox">Continue Unlogged</div>
-</div>
-<div id="col-2">
-  <div class="homebox">Log in Spotify</div>
-</div>
-</body>
-</html>
+<!--#col-2 {-->
+<!--  position: relative;-->
+<!--  width: 50%;-->
+<!--  float: left;-->
+<!--  height: 100%;-->
+<!--  background-color: #0080ff;-->
+<!--  z-index: 1010101010-->
+<!--}-->
+<!--</style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div id="col-1">-->
+<!--  <div class="homebox">Continue Unlogged</div>-->
+<!--</div>-->
+<!--<div id="col-2">-->
+<!--  <div class="homebox">Log in Spotify</div>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
 
 
 <!--<!DOCTYPE html>-->

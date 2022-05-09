@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}
+Wilts - Prediction
+{% endblock  %}
+
+
+{% block content %}
+</head>
+<body>
+<h1 class="text-success">
+    <div>
+        <a class="btn align-top btn-success top-button" href='/home'>
+            << Back
+        </a>
+    </div>
+</h1>
+<h3 class="text-center text-success">
+    <br/> <br/><br/>
+    Chose your option:
+</h3>
+<div class="align-items-center" style="display: flex; justify-content: space-around">
+    <a type="button" class="btn btn-success button-home" href="/unlogged/byplaylistID">With playlists ID</a>
+    <a type="button" class="btn btn-success button-home" href="#">With user ID</a>
+</div>
+</body>
+</html>
+{% endblock %}
+
+
+
+
+
+<!--<style>-->
+<!--.homebox {-->
+<!--  box-sizing: border-box;-->
+<!--  display: flex;-->
+<!--  justify-content: center;-->
+<!--  align-items: center;-->
+<!--  background: rgba(60,127,87,1);-->
+<!--  width: 500px;-->
+<!--  height: 250px;-->
+<!--  color: #ffffff;-->
+<!--  font-family: Roboto;-->
+<!--  font-weight: SemiBold;-->
+<!--  font-size: 48px;-->
+<!--  opacity: 1;-->
+<!--  margin-left: auto;-->
+<!--  margin-right: auto;-->
+<!--}-->
+<!--#col-1 {-->
+<!--  position: relative;-->
+<!--  width: 50%;-->
+<!--  float: left;-->
+<!--  height: 100%;-->
+<!--  background-color: rgba(60,127,87,1);-->
+<!--  z-index: 1010101010-->
+<!--}-->
+
+<!--#col-2 {-->
+<!--  position: relative;-->
+<!--  width: 50%;-->
+<!--  float: left;-->
+<!--  height: 100%;-->
+<!--  background-color:  rgba(60,127,87,1);-->
+<!--  z-index: 1010101010-->
+<!--}-->
+<!--.back-button {-->
+<!--  color: #3d8058;-->
+<!--  font-family: Roboto;-->
+<!--  font-weight: Regular;-->
+<!--  font-size: 24px;-->
+<!--  opacity: 1;-->
+<!--}-->
+<!--</style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div>-->
+<!--    <a class="back-button" href='/home'>-->
+<!--        Back-->
+<!--    </a>-->
+<!--</div>-->
+<!--<div id="col-1">-->
+<!--  <a class="homebox" href="input">With playlists ID</a>-->
+<!--</div>-->
+<!--<div id="col-2">-->
+<!--  <a class="homebox" href="#">With user ID</a>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->

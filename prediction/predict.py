@@ -2,11 +2,12 @@ import spotipy
 import logging
 import pandas as pd
 from datetime import datetime
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import requests
 
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 logger = logging.getLogger()
+
 
 from sklearn import metrics
 def cv_silhouette_scorer(estimator, X):
@@ -138,6 +139,10 @@ def comparaison(list_playlist_id, track_ids):
         return True
     return False
 
+
+
+# https://open.spotify.com/playlist/2seEyHNHF6LiVzLRQjSwHn?si=69d860234ac0405b&nd=1
+# https://open.spotify.com/album/6X4lsAafU2WXiThVoO9kF4?highlight=spotify:track:3JEye8rsrvGdlrBvZUgNIL
 
 # list_playlist_id=['2seEyHNHF6LiVzLRQjSwHn']
 # track_ids=['3JEye8rsrvGdlrBvZUgNIL']
