@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}
+Wilts - Prediction
+{% endblock  %}
+
+
+{% block content %}
+<body>
+
+<div class="vline">
+</div>
+<div class="text-success">
+    <form>
+        <a class="btn align-top btn-success top-button" href='/unlogged'>
+            << Back
+        </a>
+        <input class="btn align-top btn-success top-button" type=button" onclick="Predict()" value="Predict">
+    </form>
+</div>
+<div class="align-items-top " style="display: flex; justify-content: space-around">
+    <div class="col align-items-center">
+        <p class="bg-success info-enter text-white">Enter playlists ID:</p>
+        <form class="align-items-center" style="display: flex">
+            <div class="input-group">
+              <input id="input-playlist" type="text" class="form-control input-write" placeholder="Enter playlist ID or Url" aria-label="Playlist" aria-describedby="basic-addon1">
+            </div>
+            <input class="btn btn-success button-input" type=button" onclick="AddPlaylist()" value="Add">
+        </form>
+        <div id="output-playlist"></div>
+    </div>
+    <div class="col align-items-center">
+        <p class="bg-success info-enter text-white">Enter tracks ID:</p>
+        <form class="align-items-center" style="display: flex">
+            <div class="input-group">
+              <input id="input-track" type="text" class="form-control input-write" placeholder="Enter track ID or Url" aria-label="Track" aria-describedby="basic-addon1">
+            </div>
+            <input class="btn btn-success button-input" type=button" onclick="AddTrack()" value="Add">
+        </form>
+        <div id="output-track"></div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</body>
+<script>
+Init()
+
+function Init() {
+  $(document).ready(function(){
+    const request = new XMLHttpRequest();
+    request.open('GET', '/list_playlists');
+    request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    console.log(request);
+    console.log(request.readyState);
+    request.send();
+    list_tracks_id=[]
+    list_tracks_name=[]
+    request.onreadystatechange = function(res){
+      if (request.readyState == 4 && request.status == 200){
+        var t = request.responseText;
+        console.log(t);
+        var obj = JSON.parse(t);
+        console.log(obj);
+        list_playlists_id = obj.list_playlists_id;
+        list_playlists_name = obj.list_playlists_name;
+        console.log(list_playlists_id);
+        console.log(list_playlists_name);
+        UpdatePlaylists();
+      }
+    }
+  });
+}
+
+function deleteChild(id) {
+  var e = document.querySelector(id);
+  e.innerHTML = "";
+}
+
+function AddPlaylist() {
+    $(document).ready(function(){
+      const request = new XMLHttpRequest();
+      request.open('POST', '/playlist_name');
+      request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      var playlist = document.getElementById('input-playlist').value;
+      var to_send = "playlist="+playlist;
+      request.onreadystatechange = function(res){
+            if (request.readyState == 4 && request.status == 200){
+                var t = request.responseText;
+                console.log(t);
+                var obj = JSON.parse(t)
+                console.log(obj)
+                var playlist_id = obj.playlist_id;
+                console.log(playlist_id);
+                var playlist_name = obj.playlist_name;
+                console.log(playlist_name);
+                list_playlists_id.push(playlist_id);
+                list_playlists_name.push(playlist_name);
+                UpdatePlaylists();
+            }
+      }
+      console.log(to_send);
+      request.send(to_send);
+
+    });
+};
+
+function UpdatePlaylists(){
+    deleteChild("#output-playlist");
+    for (let i = 0; i < list_playlists_name.length; i++) {
+      console.log(list_playlists_name[i]);
+      console.log(list_playlists_id[i]);
+      var html = '<form class="align-items-center" style="display: flex"><div class="input-group"><span>'
+            + list_playlists_name[i] + '</span></div>'
+            + '<input class="btn btn-danger button-input pull-right" type=button" onclick="RemovePlaylist('
+            + i + ')" value="Remove"></form>'
+      $('#output-playlist').append(html);
+    }
+}
+
+function RemovePlaylist(i) {
+  console.log(list_playlists_name)
+  list_playlists_name.splice(i, 1)
+  console.log(list_playlists_name)
+  list_playlists_id.splice(i, 1)
+  UpdatePlaylists()
+}
+
+function AddTrack() {
+    $(document).ready(function(){
+      const request = new XMLHttpRequest();
+      request.open('POST', '/track_name');
+      request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      var track = document.getElementById('input-track').value;
+      var to_send = "track="+track;
+      request.onreadystatechange = function(res){
+            if (request.readyState == 4 && request.status == 200){
+                var t = request.responseText;
+                console.log(t);
+                var obj = JSON.parse(t)
+                console.log(obj)
+                var track_id = obj.track_id;
+                console.log(track_id);
+                var track_name = obj.track_name;
+                console.log(track_name);
+                list_tracks_id.push(track_id);
+                list_tracks_name.push(track_name);
+                UpdateTracks();
+            }
+      }
+      console.log(to_send);
+      request.send(to_send);
+
+    });
+};
+
+function UpdateTracks(){
+    deleteChild("#output-track");
+    for (let i = 0; i < list_tracks_name.length; i++) {
+      console.log(list_tracks_name[i]);
+      console.log(list_tracks_id[i]);
+      var html = '<form class="align-items-center" style="display: flex"><div class="input-group"><span>'
+            + list_tracks_name[i] + '</span></div>'
+            + '<input class="btn btn-danger button-input pull-right" type=button" onclick="RemoveTrack('
+            + i + ')" value="Remove"></form>'
+      $('#output-track').append(html);
+    }
+}
+
+function RemoveTrack(i) {
+  console.log(list_tracks_name)
+  list_tracks_name.splice(i, 1)
+  console.log(list_tracks_name)
+  list_tracks_id.splice(i, 1)
+  UpdateTracks()
+}
+
+function Predict() {
+  console.log(document.location.pathname);
+  const request = new XMLHttpRequest();
+  request.open('POST', '/prediction');
+  request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  var to_send = "list_playlists="+list_playlists_id+"&list_tracks=_id"+list_tracks;
+  request.onreadystatechange = function(res){
+        if (request.readyState == 4 && request.status == 200){
+        var t = request.responseText;
+        console.log(t);
+        var obj = JSON.parse(t)
+        console.log(obj)
+        var values = obj.results;
+        console.log(values);
+        for (let i = 0; i < tracks.length; i++) {
+            console.log(values[i]);
+            $('#track-' + i + ' span').text(values[i]);
+  };
+        }
+  }
+  console.log(to_send)
+  request.send(to_send);
+};
+
+</script>
+</html>
+
+{% endblock %}

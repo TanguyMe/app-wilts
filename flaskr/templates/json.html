@@ -11,7 +11,8 @@
 <p>This is another paragraph.</p>
 
 <button>Click me to hide paragraphs</button>
-
+<div id="compteurtest" >
+    <input type="button" value="Compteur" onclick="Count()" /></div>
 <form>
 <div id="main_div">
         <div><input id="data1" type="text" name="data1" value="" /></div>
@@ -32,6 +33,19 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
+init()
+function init(){
+  compteur = 5
+  var html = "<span>" + compteur + "</span>" ;
+  $('#compteurtest').append(html);
+}
+
+function Count(){
+  compteur=compteur+1
+  var html = "<span>" + compteur + "</span>" ;
+  $('#compteurtest').append(html);
+}
+
 $(document).ready(function(){
   $("button").click(function(){
     $("p").append("patate");
@@ -73,7 +87,7 @@ function AddRow2() {
 
 </html>
 
-<form method="POST" action="{{ url_for('patate') }}">
+<form method="POST" action="{{ url_for('main.patate') }}">
   <select name="datasource" method="POST" action="/post">
     {% for datasource1 in two_dimensional_list %}
     <option value= "{{datasource1}}">{{datasource1}}</option>"

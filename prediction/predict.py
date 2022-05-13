@@ -50,6 +50,7 @@ def get_features(df):
     tracks_features_list = [track for track in tracks_features_list if isinstance(track, dict)]
     df2 = pd.DataFrame(tracks_features_list)
     df2.drop_duplicates(inplace=True)
+    print("df: ", df)
     final_df = df.set_index('track_id').join(df2.set_index('id'), how='inner')
     columns = ['id', 'track_name', 'artist_name', 'popularity', 'duration_ms',
                'danceability', 'time_signature', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
@@ -114,6 +115,7 @@ def predict_track(track_ids: list):
     end = datetime.now()
     print("finish = ", end)
     print("duration = ", (end - start).total_seconds())
+    print("tracks_data_list: ", tracks_data_list)
     df = pd.DataFrame(tracks_data_list)
     df.drop_duplicates(inplace=True)
     return get_features(df)
