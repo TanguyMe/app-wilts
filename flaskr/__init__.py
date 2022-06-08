@@ -7,13 +7,14 @@ from flask_login import LoginManager
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 
-def create_app():
+def create_app(config={}):
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
-
+    for key, value in config:
+        app.config[key] = os.environ[value]
     db.init_app(app)
 
     login_manager = LoginManager()

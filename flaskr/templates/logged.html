@@ -55,6 +55,7 @@ function Init() {
     request.send();
     list_tracks_id=[]
     list_tracks_name=[]
+    list_tracks_pred=[]
     request.onreadystatechange = function(res){
       if (request.readyState == 4 && request.status == 200){
         var t = request.responseText;
@@ -112,7 +113,7 @@ function UpdatePlaylists(){
       var html = '<form class="align-items-center" style="display: flex"><div class="input-group"><span>'
             + list_playlists_name[i] + '</span></div>'
             + '<input class="btn btn-danger button-input pull-right" type=button" onclick="RemovePlaylist('
-            + i + ')" value="Remove"></form>'
+            + i + ')" value="X"></form>'
       $('#output-playlist').append(html);
     }
 }
@@ -158,10 +159,16 @@ function UpdateTracks(){
     for (let i = 0; i < list_tracks_name.length; i++) {
       console.log(list_tracks_name[i]);
       console.log(list_tracks_id[i]);
+      console.log(list_tracks_pred);
+      console.log(list_tracks_pred.length);
+      var pred = ''
+      if (i <= list_tracks_pred.length-1){
+        pred = '<span>: ' + list_tracks_pred[i]+ '</span>'
+      };
       var html = '<form class="align-items-center" style="display: flex"><div class="input-group"><span>'
-            + list_tracks_name[i] + '</span></div>'
+            + list_tracks_name[i] + '</span>' +pred+ '</div>'
             + '<input class="btn btn-danger button-input pull-right" type=button" onclick="RemoveTrack('
-            + i + ')" value="Remove"></form>'
+            + i + ')" value="X"></form>'
       $('#output-track').append(html);
     }
 }
@@ -171,6 +178,7 @@ function RemoveTrack(i) {
   list_tracks_name.splice(i, 1)
   console.log(list_tracks_name)
   list_tracks_id.splice(i, 1)
+  list_tracks_pred.splice(i, 1)
   UpdateTracks()
 }
 
@@ -179,7 +187,7 @@ function Predict() {
   const request = new XMLHttpRequest();
   request.open('POST', '/prediction');
   request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-  var to_send = "list_playlists="+list_playlists_id+"&list_tracks=_id"+list_tracks;
+  var to_send = "list_playlists="+list_playlists_id+"&list_tracks="+list_tracks_id;
   request.onreadystatechange = function(res){
         if (request.readyState == 4 && request.status == 200){
         var t = request.responseText;
@@ -188,10 +196,12 @@ function Predict() {
         console.log(obj)
         var values = obj.results;
         console.log(values);
-        for (let i = 0; i < tracks.length; i++) {
+        var list_tracks_pred = [];
+        for (let i = 0; i < list_tracks_id.length; i++) {
             console.log(values[i]);
-            $('#track-' + i + ' span').text(values[i]);
+            list_tracks_pred.push(values[i])
   };
+        UpdateTracks()
         }
   }
   console.log(to_send)

@@ -25,3 +25,5 @@ SQLAlchemy==1.4.32
 threadpoolctl==3.1.0
 urllib3==1.26.8
 Werkzeug==2.0.3
+pytest
+pytest-flask-sqlalchemy

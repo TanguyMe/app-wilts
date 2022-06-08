@@ -45,24 +45,21 @@ def byplaylistID():
 
 @main.route('/prediction', methods=['POST'])
 def prediction():
-    list_playlists_url = request.values.get('list_playlists')
-    list_tracks_url = request.values.get('list_tracks')
-    if list_playlists_url and list_tracks_url:
-        list_playlists_url = list_playlists_url.split(",")
-        list_tracks_url = list_tracks_url.split(",")
-        import re
-        pattern_playlist = '(?<=playlist[:|/])[^?]*'
-        pattern_track = '(?<=track[:|/])[^?]*'
-        list_playlists_id = [re.search(pattern_playlist, url).group() for url in list_playlists_url]
-        list_tracks_id = [re.search(pattern_track, url).group() for url in list_tracks_url]
+    list_playlists_id = request.values.get('list_playlists')
+    list_tracks_id = request.values.get('list_tracks')
+    if list_playlists_id and list_tracks_id:
+        list_playlists_id = list_playlists_id.split(",")
+        list_tracks_id = list_tracks_id.split(",")
+        # print("list_tracks_id: ", list_tracks_id)
+        # print("list_playlists_id: ", list_playlists_id)
         results = []
         for track in list_tracks_id:
             if comparaison(list_playlists_id, [track]):
                 results.append("Bon choix")
             else:
                 results.append("Laisse tomber")
-        print("RESULTS: ", results)
-        print(jsonify({"results": results}))
+        # print("RESULTS: ", results)
+        # print(jsonify({"results": results}))
         return jsonify({"results": results})
 
 @main.route('/prediction2')
@@ -102,7 +99,7 @@ def login_post():
     # take the user supplied password, hash it, and compare it to the hashed password in database
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login')) # if user doesn't exist or password is wrong, reload the page
+        return redirect(url_for('main.login')) # if user doesn't exist or password is wrong, reload the page
 
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
@@ -166,8 +163,8 @@ def get_playlist_name():
     print("playlist", playlist_url)
     import re
     pattern_playlist = '(?<=playlist[:|/])[^?]*'
-    if re.match(pattern_playlist, playlist_url):
-        playlist_id=re.search(pattern_playlist, playlist_url)
+    if re.search(pattern_playlist, playlist_url):
+        playlist_id=re.search(pattern_playlist, playlist_url).group(0)
     else:
         playlist_id=playlist_url
     spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
@@ -181,12 +178,13 @@ def get_track_name():
     print("track", track_url)
     import re
     pattern_track = '(?<=track[:|/])[^?]*'
-    if re.match(pattern_track, track_url):
-        track_id = re.search(pattern_track, track_url)
+    if re.search(pattern_track, track_url):
+        track_id = re.search(pattern_track, track_url).group(0)
     else:
         track_id = track_url
     spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     results = spotify.track(track_id)
+    print("track id: ", track_id)
     track_name = results['name'] + " - " + results['artists'][0]['name']
     return jsonify({"track_id": track_id, "track_name": track_name})
 
