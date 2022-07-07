@@ -5,22 +5,47 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
-from .model import User
+from .model import User, Historique
 from . import db
+from datetime import datetime
 
 main = Blueprint('main', __name__)
-
-@main.route('/')
-def index():
-    return render_template('home.html')
 
 @main.route('/profile')
 @login_required
 def profile():
     return render_template('profile.html', spotifyid=current_user.spotifyid)
 
+@main.route('/users')
+@login_required
+def users():
+    if current_user.role == 'admin':
+        full_query = User.query.all()
+        data = [user.as_dict() for user in full_query]
+        columns = [{"field": col, "title": col, "sortable": True} for col in User.__table__.columns.keys()]
+        return render_template("users.html",
+                               data=data,
+                               columns=columns,
+                               title='Users')
+        return render_template('users.html', query=User.query.all())
+    return redirect(url_for('main.profile'))
+
+@main.route('/historique')
+@login_required
+def historique():
+    if current_user.role == 'admin':
+        full_query = Historique.query.all()
+        data = [hist.as_dict() for hist in full_query]
+        columns = [{"field": col, "title": col, "sortable": True} for col in Historique.__table__.columns.keys()]
+        return render_template("historique.html",
+                               data=data,
+                               columns=columns,
+                               title='Historique')
+        # return render_template('historique.html', query=Historique.query.all())
+    return redirect(url_for('main.profile'))
+
 @main.route('/')
-def hello():
+def index():
     return redirect('/home')
 
 @main.route('/home')
@@ -53,13 +78,27 @@ def prediction():
         # print("list_tracks_id: ", list_tracks_id)
         # print("list_playlists_id: ", list_playlists_id)
         results = []
-        for track in list_tracks_id:
-            if comparaison(list_playlists_id, [track]):
+        for comp in comparaison(list_playlists_id, list_tracks_id):
+            print("COMP: ", comp)
+            if comp:
                 results.append("Bon choix")
             else:
                 results.append("Laisse tomber")
+        # for track in list_tracks_id:
+        #     if comparaison(list_playlists_id, [track]):
+        #         results.append("Bon choix")
+        #     else:
+        #         results.append("Laisse tomber")
         # print("RESULTS: ", results)
         # print(jsonify({"results": results}))
+        print("RESUTLS: ", results)
+        for i in range(len(list_tracks_id)):
+            # create new user with the form data. Hash the password so plaintext version isn't saved.
+            histo = Historique(userid=current_user.id, playlistsid=str(list_playlists_id), trackid=list_tracks_id[i],
+                               prediction=results[i], date=datetime.today())
+            # add the new user to the database
+            db.session.add(histo)
+            db.session.commit()
         return jsonify({"results": results})
 
 @main.route('/prediction2')
@@ -84,6 +123,7 @@ def signup():
     return render_template('signup.html')
 
 @main.route('/logged')
+@login_required
 def logged():
     return render_template('logged.html')
 
@@ -119,7 +159,7 @@ def signup_post():
         return redirect(url_for('main.signup'))
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
-    new_user = User(email=email, spotifyid=spotifyid, password=generate_password_hash(password, method='sha256'))
+    new_user = User(email=email, spotifyid=spotifyid, password=generate_password_hash(password, method='sha256'), role="user")
 
     # add the new user to the database
     db.session.add(new_user)
@@ -188,6 +228,98 @@ def get_track_name():
     track_name = results['name'] + " - " + results['artists'][0]['name']
     return jsonify({"track_id": track_id, "track_name": track_name})
 
+
+@main.route('/update', methods=['GET', 'POST'])
+@login_required
+def update():
+    if request.form.get('userid'):
+        userid = request.form.get('userid')
+        print(userid)
+        user=db.session.query(User).filter(User.id == userid).first()
+        print(user)
+        print(user.email)
+        if current_user.id == userid or current_user.role == 'admin':
+            if request.method == 'POST':
+                return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
+                user.spotifyid = request.form.get('spotifyID')
+                db.session.commit()
+                if current_user.role == 'admin':
+                    return redirect(url_for('main.users'))
+    if request.form.get('historiqueid'):
+        historiqueid = request.form.get('historiqueid')
+        print(historiqueid)
+        histo = db.session.query(Historique).filter(Historique.id == historiqueid).first()
+        print(histo)
+        print(histo.trackid)
+        if current_user.role == 'admin':
+            if request.method == 'POST':
+                return render_template('update_histo.html',
+                                       histo=db.session.query(Historique).filter(Historique.id == historiqueid).first())
+                if request.form.get("satisfaction"):
+                    histo.satisfaction = request.form.get("satisfaction")
+                db.session.commit()
+                return redirect(url_for('main.historique'))
+            # if request.method == 'GET':
+            #     print("GET")
+            #     return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
+    # render_template('update.html', userid=db.session.query(User).filter(User.id == userid))
+    return redirect(url_for('main.profile'))
+
+
+@main.route('/update_user/<userid>', methods=['POST'])
+@login_required
+def update_user(userid):
+    if current_user.id == userid or current_user.role == 'admin':
+        user=db.session.query(User).filter(User.id == userid).first()
+        user.spotifyid = request.form.get('spotifyID')
+        db.session.commit()
+        if current_user.role == 'admin':
+            return redirect(url_for('main.users'))
+    return redirect(url_for('main.profile'))
+
+
+@main.route('/delete_user/<userid>', methods=['POST', 'GET'])
+@login_required
+def delete_user(userid):
+    if current_user.id == userid or current_user.role == 'admin':
+        user = db.session.query(User).filter(User.id == userid).first()
+        if current_user.id == userid:
+            logout_user()
+        db.session.delete(user)
+        db.session.commit()
+        if current_user.role == 'admin':
+            return redirect(url_for('main.users'))
+    return redirect(url_for('main.profile'))
+
+
+@main.route('/update_histo/<histoid>', methods=['POST'])
+@login_required
+def update_histo(histoid):
+    if current_user.role == 'admin':
+        histo = db.session.query(Historique).filter(Historique.id == histoid).first()
+        request_value = request.form.get('satisfaction')
+        if request_value == 'None':
+            request_value = None
+        else:
+            request_value = bool(request_value)
+        histo.satisfaction = request_value
+        db.session.commit()
+        return redirect(url_for('main.historique'))
+    return redirect(url_for('main.profile'))
+
+
+
+@main.route('/delete_histo/<histoid>', methods=['POST'])
+@login_required
+def delete_histo(histoid):
+    if current_user.role == 'admin':
+        histo = db.session.query(Historique).filter(Historique.id == histoid).first()
+        db.session.delete(histo)
+        db.session.commit()
+        return redirect(url_for('main.historique'))
+    return redirect(url_for('main.profile'))
+
+
 # @main.route('/login/')
 # def login():
 #     scope = "user-library-read"
@@ -197,55 +329,65 @@ def get_track_name():
 #     print(auth_url)
 #     return redirect(auth_url)
 
-@main.route('/callback')
-def callback():
-    # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
-    scope = "user-library-read"
-    sp_oauth = spotipy.oauth2.SpotifyOAuth(client_id=os.environ["SPOTIPY_CLIENT_ID"],
-                                           client_secret=os.environ["SPOTIPY_CLIENT_SECRET"],
-                                           redirect_uri=["SPOTIPY_REDIRECT_URI"], scope=scope)
-    print("URI REDIRECT: ", os.environ["SPOTIPY_REDIRECT_URI"])
-    session.clear()
-    code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code)
-
-    # Saving the access token along with all other token related info
-    session["token_info"] = token_info
-    return redirect("home")
-
-#rendering the HTML page which has the button
-@main.route('/json')
-def json():
-    return render_template('json.html')
-
-#background process happening without any refreshing
-@main.route('/background_process_test')
-def background_process_test():
-    print ("Hello")
-    return ("nothing")
-
-listed = ["patate 1", "patate 2", "patate 3"]
-@main.route('/patate', methods=['GET', 'POST'])
-def patate():
-    desc=""
-    id_value = request.form.get('datasource')
-    def description_value(select):
-        for data in listed:
-            if data == select:
-                return data
-    if id_value:
-        desc = description_value(id_value)
-    return render_template('json.html', two_dimensional_list=listed, desc=desc)
-
-
-@main.route('/data', methods=['GET', 'POST'])
-def data():
-    id_value = request.form.get('datasource')
-    def description_value(select):
-        for data in listed:
-            if data == select:
-                return data
-    return description_value(id_value)
+# @main.route('/callback')
+# def callback():
+#     # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
+#     scope = "user-library-read"
+#     sp_oauth = spotipy.oauth2.SpotifyOAuth(client_id=os.environ["SPOTIPY_CLIENT_ID"],
+#                                            client_secret=os.environ["SPOTIPY_CLIENT_SECRET"],
+#                                            redirect_uri=["SPOTIPY_REDIRECT_URI"], scope=scope)
+#     print("URI REDIRECT: ", os.environ["SPOTIPY_REDIRECT_URI"])
+#     session.clear()
+#     code = request.args.get('code')
+#     token_info = sp_oauth.get_access_token(code)
+#
+#     # Saving the access token along with all other token related info
+#     session["token_info"] = token_info
+#     return redirect("home")
+#
+# #rendering the HTML page which has the button
+# @main.route('/json')
+# def json():
+#     return render_template('json.html')
+#
+# #background process happening without any refreshing
+# @main.route('/background_process_test')
+# def background_process_test():
+#     print ("Hello")
+#     return ("nothing")
+#
+# listed = ["patate 1", "patate 2", "patate 3"]
+# @main.route('/patate', methods=['GET', 'POST'])
+# def patate():
+#     desc=""
+#     id_value = request.form.get('datasource')
+#     def description_value(select):
+#         for data in listed:
+#             if data == select:
+#                 return data
+#     if id_value:
+#         desc = description_value(id_value)
+#     return render_template('json.html', two_dimensional_list=listed, desc=desc)
+#
+#
+# @main.route('/data', methods=['GET', 'POST'])
+# def data():
+#     id_value = request.form.get('datasource')
+#     def description_value(select):
+#         for data in listed:
+#             if data == select:
+#                 return data
+#     return description_value(id_value)
+#
+# @main.route('/testtable')
+# def testtable():
+#     full_query = Historique.query.all()
+#     data = [hist.as_dict() for hist in full_query]
+#     columns = [{"field": col, "title":col, "sortable":True} for col in Historique.__table__.columns.keys()]
+#     return render_template("table.html", query=user)
+#       data=data,
+#       columns=columns,
+#       title='Historique')
 
 # https://github.com/charles-42/flask_tutorial/tree/master/channel_app
 # https://github.com/SprinTech/sound-recognizer/tree/backend/backend

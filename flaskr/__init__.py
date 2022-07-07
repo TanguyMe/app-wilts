@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from werkzeug.security import generate_password_hash
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
@@ -13,15 +14,23 @@ def create_app(config={}):
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI_SQLITE']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
-    for key, value in config:
-        app.config[key] = os.environ[value]
+    for key, value in config.items():
+        app.config[key] = value
+
+    from .model import User, Historique
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
+        if not User.query.filter_by(email=os.environ["ADMIN_MAIL"]).first():
+            # create new user with the form data. Hash the password so plaintext version isn't saved.
+            admin_user = User(email=os.environ["ADMIN_MAIL"], spotifyid=os.environ["ADMIN_SPOTIFYID"], password=generate_password_hash(os.environ["ADMIN_PASSWORD"], method='sha256'), role="admin")
+            # add the new user to the database
+            db.session.add(admin_user)
+            db.session.commit()
 
     login_manager = LoginManager()
     login_manager.login_view = 'main.login'
     login_manager.init_app(app)
-
-    from .model import User
 
     @login_manager.user_loader
     def load_user(user_id):

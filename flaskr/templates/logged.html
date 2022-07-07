@@ -155,7 +155,9 @@ function AddTrack() {
 };
 
 function UpdateTracks(){
+    console.log(list_tracks_pred);
     deleteChild("#output-track");
+    console.log(list_tracks_pred);
     for (let i = 0; i < list_tracks_name.length; i++) {
       console.log(list_tracks_name[i]);
       console.log(list_tracks_id[i]);
@@ -196,11 +198,13 @@ function Predict() {
         console.log(obj)
         var values = obj.results;
         console.log(values);
-        var list_tracks_pred = [];
+        list_tracks_pred = [];
         for (let i = 0; i < list_tracks_id.length; i++) {
             console.log(values[i]);
             list_tracks_pred.push(values[i])
+            console.log(list_tracks_pred)
   };
+        console.log(list_tracks_pred);
         UpdateTracks()
         }
   }

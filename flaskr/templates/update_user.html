@@ -1,0 +1,16 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <p><b>User ID: </b> {{user.id}}</p>
+    <p><b>Mail: </b> {{user.email}}</p>
+    <p><b>Role: </b> {{user.role}}</p>
+    <p><b>Spotify ID: </b> <form method="POST" action=/update_user/{{user.id}}>
+          <input class="input is-large" type="spotifyID" name="spotifyID" placeholder={{user.spotifyid}} autofocus="">
+          <button type="Submit">Update</button>
+        </form></p>
+    <p><form method="POST" action=/delete_user/{{user.id}}><button class="btn-danger" type="Submit">Delete</button></form></p>
+</div>
+{% endblock %}

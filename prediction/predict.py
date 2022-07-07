@@ -73,7 +73,7 @@ def predict_playlist(list_playlist_id):
     print("start = ", start)
     try:
         for playlist_id in list_playlist_id:
-            track_results = spotify.playlist_tracks(playlist_id=playlist_id)
+            track_results = spotify.playlist_items(playlist_id=playlist_id, additional_types=(['track']))
             while track_results:
                 for track in track_results['items']:
                     single_track_dict = {
@@ -117,8 +117,12 @@ def predict_track(track_ids: list):
     print("duration = ", (end - start).total_seconds())
     print("tracks_data_list: ", tracks_data_list)
     df = pd.DataFrame(tracks_data_list)
-    df.drop_duplicates(inplace=True)
-    return get_features(df)
+    # df.reset_index(inplace=True)
+    # df.drop_duplicates(inplace=True)
+    index = pd.Series([i for i in range(df.shape[0])], dtype=int)
+    print("shape: ", df.shape)
+    print("index: ", index)
+    return get_features(df).set_index(index)
 
 
 def comparaison(list_playlist_id, track_ids):
@@ -127,7 +131,7 @@ def comparaison(list_playlist_id, track_ids):
     df_playlist = predict_playlist(list_playlist_id)
     df_tracks = predict_track(track_ids)
     print("playlists", df_playlist)
-    print("tracks", df_tracks)
+    print("tracks: ", df_tracks)
     # df_playlist['prediction'] = requests.get('http://localhost:5000/prediction', json=df_playlist.to_json()).json()
     # df_tracks['prediction'] = requests.get('http://localhost:5000/prediction', json=df_tracks.to_json()).json()
     # df_playlist['prediction'] = requests.get('https://wilts-model.herokuapp.com/prediction', json=df_playlist.to_json()).json()
@@ -137,9 +141,10 @@ def comparaison(list_playlist_id, track_ids):
     thresh = 0.03
     liked_clusters = df_playlist['prediction'].value_counts()[
         df_playlist['prediction'].value_counts() >= thresh * len(df_playlist['prediction'])].index
-    if df_tracks['prediction'].values[0] in liked_clusters:
-        return True
-    return False
+    print("df_tracks_predict: ", df_tracks['prediction'])
+    results=[cluster in liked_clusters for cluster in df_tracks['prediction'].values]
+    print("RESULTS PREDICT: ", results)
+    return results
 
 
 

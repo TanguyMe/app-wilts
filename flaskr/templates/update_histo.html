@@ -1,0 +1,23 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <p><b>Histo ID: </b> {{histo.id}}</p>
+    <p><b>User ID: </b> {{histo.userid}}</p>
+    <p><b>Playlists ID: </b> {{histo.playlistsid}}</p>
+    <p><b>Track ID: </b> {{histo.trackid}}</p>
+    <p><b>Prediction: </b> {{histo.prediction}}</p>
+    <p><b>Satisfaction: </b> <form method="POST" action=/update_histo/{{histo.id}}>
+        <select name="satisfaction" method="POST" action="/post" >
+            {% for satisfaction1 in [True, False, None] %}
+            <option value= "{{satisfaction1}}" >{{satisfaction1}}</option>"
+            {% endfor %}
+          </select>
+          <button type="Submit">Update</button>
+        </form></p>
+    <p><b>Date: </b> {{histo.date}}</p>
+    <form method="POST" action=/delete_histo/{{histo.id}}><button class="btn-danger" type="Submit">Delete</button></form>
+</div>
+{% endblock %}
