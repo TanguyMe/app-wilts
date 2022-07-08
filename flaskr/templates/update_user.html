@@ -4,13 +4,27 @@
 
 {% block content %}
 <div>
-    <p><b>User ID: </b> {{user.id}}</p>
-    <p><b>Mail: </b> {{user.email}}</p>
-    <p><b>Role: </b> {{user.role}}</p>
-    <p><b>Spotify ID: </b> <form method="POST" action=/update_user/{{user.id}}>
-          <input class="input is-large" type="spotifyID" name="spotifyID" placeholder={{user.spotifyid}} autofocus="">
-          <button type="Submit">Update</button>
-        </form></p>
-    <p><form method="POST" action=/delete_user/{{user.id}}><button class="btn-danger" type="Submit">Delete</button></form></p>
+    <div class="content is-large"><b>User ID: </b> {{user.id}}</div>
+    <div class="content is-large"><b>Mail: </b> {{user.email}}</div>
+    <div class="content is-large"><b>Role: </b> {{user.role}}</div>
+    <div class="content is-large"><b>New Spotify ID: </b></div>
+    <div class="columns">
+      <div class="column is-one-third"></div>
+      <div class="column">
+        <form class="field has-addons" method="POST" action="/update_user/{{user.id}}">
+            <div class="control has-icons-left has-icons-right is-expanded">
+                <input name="spotifyID" type="text" class="input is-info is-large" placeholder={{user.spotifyid}}>
+                <span class="icon is-medium is-left">
+                  <i class="fa fa-pencil"></i>
+                </span>
+            </div>
+            <p class="control">
+                <button type="Submit" class="button is-info is-large" >Update</button>
+            </p>
+        </form>
+      </div>
+      <div class="column"></div>
+    </div>
+    <p><form method="POST" action=/delete_user/{{user.id}}><button class="button is-full-width is-danger" type="Submit">Delete account</button></form></p>
 </div>
 {% endblock %}

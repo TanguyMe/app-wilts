@@ -4,6 +4,25 @@
 
 {% block content %}
 <h1 class="title">
-  Welcome, {{ spotifyid }}!
+  Welcome, {{ current_user.spotifyid }}!
 </h1>
+<div class="card">
+  <div class="card-content">
+    <div class="content">
+      <p> <b>Mail:</b> {{ current_user.email }} </p>
+      <p> <b>Spotify ID:</b> {{ current_user.spotifyid }}</p>
+      <p> <b>Role:</b> {{ current_user.role }}</p>
+    </div>
+  </div>
+    <footer class="card-footer">
+    <form class="card-footer-item" method="POST" action=/update>
+      <input class="input is-large" type="hidden" name="userid" value={{current_user.id}} autofocus="">
+      <button class="card-footer-item" type="Submit">Update</button>
+    </form>
+    <form class="card-footer-item" method="POST" action=/delete_user/{{current_user.id}}>
+      <input class="input is-large" type="hidden" autofocus="">
+      <button class="card-footer-item" type="Submit">Delete</button>
+    </form>
+  </footer>
+</div>
 {% endblock %}

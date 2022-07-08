@@ -15,3 +15,5 @@ build/
 .idea/
 .cache
 env
+
+instance/flaskr.sqlite

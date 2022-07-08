@@ -10,6 +10,7 @@
     <p><b>Track ID: </b> {{histo.trackid}}</p>
     <p><b>Prediction: </b> {{histo.prediction}}</p>
     <p><b>Satisfaction: </b> <form method="POST" action=/update_histo/{{histo.id}}>
+        <p>Current satisfaction: {{histo.satisfaction}}</p>
         <select name="satisfaction" method="POST" action="/post" >
             {% for satisfaction1 in [True, False, None] %}
             <option value= "{{satisfaction1}}" >{{satisfaction1}}</option>"

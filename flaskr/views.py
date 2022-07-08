@@ -8,13 +8,14 @@ from flask_login import login_user, logout_user, login_required, current_user
 from .model import User, Historique
 from . import db
 from datetime import datetime
+import re
 
 main = Blueprint('main', __name__)
 
 @main.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html', spotifyid=current_user.spotifyid)
+    return render_template('profile.html')
 
 @main.route('/users')
 @login_required
@@ -27,7 +28,6 @@ def users():
                                data=data,
                                columns=columns,
                                title='Users')
-        return render_template('users.html', query=User.query.all())
     return redirect(url_for('main.profile'))
 
 @main.route('/historique')
@@ -41,7 +41,6 @@ def historique():
                                data=data,
                                columns=columns,
                                title='Historique')
-        # return render_template('historique.html', query=Historique.query.all())
     return redirect(url_for('main.profile'))
 
 @main.route('/')
@@ -52,22 +51,6 @@ def index():
 def home():
     return render_template('home.html')
 
-@main.route('/playlist_input')
-def playlist_input(playlist):
-    return render_template(playlist)
-
-@main.route('/input')
-def input():
-    return render_template('input.html')
-
-@main.route('/unlogged')
-def unlogged():
-    return render_template('continueunlogged.html')
-
-@main.route('/unlogged/byplaylistID')
-def byplaylistID():
-    return render_template('input_unlogged_playlists.html')
-
 @main.route('/prediction', methods=['POST'])
 def prediction():
     list_playlists_id = request.values.get('list_playlists')
@@ -75,23 +58,13 @@ def prediction():
     if list_playlists_id and list_tracks_id:
         list_playlists_id = list_playlists_id.split(",")
         list_tracks_id = list_tracks_id.split(",")
-        # print("list_tracks_id: ", list_tracks_id)
-        # print("list_playlists_id: ", list_playlists_id)
         results = []
         for comp in comparaison(list_playlists_id, list_tracks_id):
             print("COMP: ", comp)
             if comp:
-                results.append("Bon choix")
+                results.append(1)
             else:
-                results.append("Laisse tomber")
-        # for track in list_tracks_id:
-        #     if comparaison(list_playlists_id, [track]):
-        #         results.append("Bon choix")
-        #     else:
-        #         results.append("Laisse tomber")
-        # print("RESULTS: ", results)
-        # print(jsonify({"results": results}))
-        print("RESUTLS: ", results)
+                results.append(0)
         for i in range(len(list_tracks_id)):
             # create new user with the form data. Hash the password so plaintext version isn't saved.
             histo = Historique(userid=current_user.id, playlistsid=str(list_playlists_id), trackid=list_tracks_id[i],
@@ -100,19 +73,6 @@ def prediction():
             db.session.add(histo)
             db.session.commit()
         return jsonify({"results": results})
-
-@main.route('/prediction2')
-def prediction2():
-    id_playlist = request.values.get('id_playlist')
-    id_track = request.values.get('id_track')
-    if comparaison([id_playlist], [id_track]):
-        return "Bon choix"
-    return "Laisse tomber"
-    # return redirect(url_for("input"))
-
-@main.route('/logging')
-def logging():
-    return render_template('logging.html')
 
 @main.route('/log')
 def login():
@@ -179,29 +139,22 @@ def logout():
 def list_playlists():
     list_playlists_id = []
     list_playlists_name = []
-    print("USER", current_user.email)
-    print("id", current_user.spotifyid)
     spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     results = spotify.user_playlists(current_user.spotifyid)
-    print("results: ", results)
     while results:
         for playlist in results['items']:
             list_playlists_id.append(playlist['id'])
             list_playlists_name.append(playlist['name'])
         results = spotify.next(results)
-    print("playlist name: ", list_playlists_name)
-    print("playlist id: ", list_playlists_id)
     if not list_playlists_name:
         if not list_playlists_id:
-            return jsonify({"list_playlists_id": ['vide'], "list_playlists_name": ['vide']})
+            return jsonify({"list_playlists_id": [], "list_playlists_name": []})
     return jsonify({"list_playlists_id": list_playlists_id, "list_playlists_name": list_playlists_name})
 
 
 @main.route('/playlist_name', methods=['POST'])
 def get_playlist_name():
     playlist_url = request.values.get('playlist')
-    print("playlist", playlist_url)
-    import re
     pattern_playlist = '(?<=playlist[:|/])[^?]*'
     if re.search(pattern_playlist, playlist_url):
         playlist_id=re.search(pattern_playlist, playlist_url).group(0)
@@ -215,8 +168,6 @@ def get_playlist_name():
 @main.route('/track_name', methods=['POST'])
 def get_track_name():
     track_url = request.values.get('track')
-    print("track", track_url)
-    import re
     pattern_track = '(?<=track[:|/])[^?]*'
     if re.search(pattern_track, track_url):
         track_id = re.search(pattern_track, track_url).group(0)
@@ -224,7 +175,6 @@ def get_track_name():
         track_id = track_url
     spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     results = spotify.track(track_id)
-    print("track id: ", track_id)
     track_name = results['name'] + " - " + results['artists'][0]['name']
     return jsonify({"track_id": track_id, "track_name": track_name})
 
@@ -234,11 +184,7 @@ def get_track_name():
 def update():
     if request.form.get('userid'):
         userid = request.form.get('userid')
-        print(userid)
-        user=db.session.query(User).filter(User.id == userid).first()
-        print(user)
-        print(user.email)
-        if current_user.id == userid or current_user.role == 'admin':
+        if str(current_user.id) == userid or current_user.role == 'admin':
             if request.method == 'POST':
                 return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
                 user.spotifyid = request.form.get('spotifyID')
@@ -247,10 +193,6 @@ def update():
                     return redirect(url_for('main.users'))
     if request.form.get('historiqueid'):
         historiqueid = request.form.get('historiqueid')
-        print(historiqueid)
-        histo = db.session.query(Historique).filter(Historique.id == historiqueid).first()
-        print(histo)
-        print(histo.trackid)
         if current_user.role == 'admin':
             if request.method == 'POST':
                 return render_template('update_histo.html',
@@ -259,17 +201,13 @@ def update():
                     histo.satisfaction = request.form.get("satisfaction")
                 db.session.commit()
                 return redirect(url_for('main.historique'))
-            # if request.method == 'GET':
-            #     print("GET")
-            #     return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
-    # render_template('update.html', userid=db.session.query(User).filter(User.id == userid))
     return redirect(url_for('main.profile'))
 
 
 @main.route('/update_user/<userid>', methods=['POST'])
 @login_required
 def update_user(userid):
-    if current_user.id == userid or current_user.role == 'admin':
+    if str(current_user.id) == userid or current_user.role == 'admin':
         user=db.session.query(User).filter(User.id == userid).first()
         user.spotifyid = request.form.get('spotifyID')
         db.session.commit()
@@ -281,14 +219,17 @@ def update_user(userid):
 @main.route('/delete_user/<userid>', methods=['POST', 'GET'])
 @login_required
 def delete_user(userid):
-    if current_user.id == userid or current_user.role == 'admin':
+    if str(current_user.id) == userid or current_user.role == 'admin':
         user = db.session.query(User).filter(User.id == userid).first()
-        if current_user.id == userid:
+        if str(current_user.id) == userid:
             logout_user()
         db.session.delete(user)
         db.session.commit()
-        if current_user.role == 'admin':
-            return redirect(url_for('main.users'))
+        try:
+            if current_user.role == 'admin':
+                return redirect(url_for('main.users'))
+        except:
+            pass
     return redirect(url_for('main.profile'))
 
 
@@ -319,75 +260,6 @@ def delete_histo(histoid):
         return redirect(url_for('main.historique'))
     return redirect(url_for('main.profile'))
 
-
-# @main.route('/login/')
-# def login():
-#     scope = "user-library-read"
-#     sp_oauth = spotipy.oauth2.SpotifyOAuth(client_id=os.environ["SPOTIPY_CLIENT_ID"], client_secret=os.environ["SPOTIPY_CLIENT_SECRET"], redirect_uri = ["SPOTIPY_REDIRECT_URI"], scope = scope)
-#     auth_url = sp_oauth.get_authorize_url()
-#     print(os.environ["SPOTIPY_REDIRECT_URI"])
-#     print(auth_url)
-#     return redirect(auth_url)
-
-# @main.route('/callback')
-# def callback():
-#     # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
-#     scope = "user-library-read"
-#     sp_oauth = spotipy.oauth2.SpotifyOAuth(client_id=os.environ["SPOTIPY_CLIENT_ID"],
-#                                            client_secret=os.environ["SPOTIPY_CLIENT_SECRET"],
-#                                            redirect_uri=["SPOTIPY_REDIRECT_URI"], scope=scope)
-#     print("URI REDIRECT: ", os.environ["SPOTIPY_REDIRECT_URI"])
-#     session.clear()
-#     code = request.args.get('code')
-#     token_info = sp_oauth.get_access_token(code)
-#
-#     # Saving the access token along with all other token related info
-#     session["token_info"] = token_info
-#     return redirect("home")
-#
-# #rendering the HTML page which has the button
-# @main.route('/json')
-# def json():
-#     return render_template('json.html')
-#
-# #background process happening without any refreshing
-# @main.route('/background_process_test')
-# def background_process_test():
-#     print ("Hello")
-#     return ("nothing")
-#
-# listed = ["patate 1", "patate 2", "patate 3"]
-# @main.route('/patate', methods=['GET', 'POST'])
-# def patate():
-#     desc=""
-#     id_value = request.form.get('datasource')
-#     def description_value(select):
-#         for data in listed:
-#             if data == select:
-#                 return data
-#     if id_value:
-#         desc = description_value(id_value)
-#     return render_template('json.html', two_dimensional_list=listed, desc=desc)
-#
-#
-# @main.route('/data', methods=['GET', 'POST'])
-# def data():
-#     id_value = request.form.get('datasource')
-#     def description_value(select):
-#         for data in listed:
-#             if data == select:
-#                 return data
-#     return description_value(id_value)
-#
-# @main.route('/testtable')
-# def testtable():
-#     full_query = Historique.query.all()
-#     data = [hist.as_dict() for hist in full_query]
-#     columns = [{"field": col, "title":col, "sortable":True} for col in Historique.__table__.columns.keys()]
-#     return render_template("table.html", query=user)
-#       data=data,
-#       columns=columns,
-#       title='Historique')
 
 # https://github.com/charles-42/flask_tutorial/tree/master/channel_app
 # https://github.com/SprinTech/sound-recognizer/tree/backend/backend

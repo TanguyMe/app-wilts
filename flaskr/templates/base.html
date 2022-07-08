@@ -1,25 +1,81 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">    <title> {% block title %} {% endblock  %} </title>
-    <link rel="stylesheet" type="txt/css" href="{{ url_for('static', filename='styles.css') }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wilts</title>
+    {% block title %}
+
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    {% block script %}
+
+    {% endblock %}
 </head>
+
 <body>
-    <div class="text-success justify-content-end">
-        <a class="btn btn-success pull-right button-profile" href='/profile'>
-            Profile
-        </a>
-    </div>
-    {% block content %} {% endblock  %}
+    <section class="hero is-primary is-fullheight">
+
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+                    <div id="navbarMenuHeroA" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a href="{{ url_for('main.index') }}" class="navbar-item">
+                                Home
+                            </a>
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
+                                Profile
+                            </a>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                                {% if current_user.role == 'admin' %}
+                                <a href="{{ url_for('main.users') }}" class="navbar-item">
+                                    Users
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                                {% if current_user.role == 'admin' %}
+                                <a href="{{ url_for('main.historique') }}" class="navbar-item">
+                                    Historique
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                            {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('main.login') }}" class="navbar-item">
+                                Login
+                            </a>
+                            <a href="{{ url_for('main.signup') }}" class="navbar-item">
+                                Sign Up
+                            </a>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('main.logout') }}" class="navbar-item">
+                                Logout
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="hero-body">
+            <div class="container has-text-centered">
+               {% block content %}
+               {% endblock %}
+            </div>
+        </div>
+    </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </body>
-</html>
+
 <style>
 
 .button-home {
