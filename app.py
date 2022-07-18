@@ -1,8 +1,10 @@
 from flaskr import create_app
 from prediction.predict import cv_silhouette_scorer
 
+app=create_app()
+
 if __name__ == "__main__":
-    create_app().run(port=8000, debug=True)
+    app.run(port=8000)
 
 # from flask import Flask
 #
