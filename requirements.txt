@@ -27,3 +27,4 @@ urllib3==1.26.8
 Werkzeug==2.0.3
 pytest
 pytest-flask-sqlalchemy
+pyodbc

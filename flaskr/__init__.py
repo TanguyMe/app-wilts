@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
+import urllib.parse
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
@@ -12,7 +13,11 @@ def create_app(config={}):
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI_SQLITE']
+    if os.environ['SQLALCHEMY_DATABASE_MSSQL']:
+        params = urllib.parse.quote_plus(os.environ['SQLALCHEMY_DATABASE_MSSQL'])
+        app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect=%s" % params
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI_SQLITE']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
     for key, value in config.items():
         app.config[key] = value
