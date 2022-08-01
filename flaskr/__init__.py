@@ -15,7 +15,7 @@ def create_app(config={}):
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
     if os.environ['SQLALCHEMY_DATABASE_MSSQL']:
         params = urllib.parse.quote_plus(os.environ['SQLALCHEMY_DATABASE_MSSQL'])
-        app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect=%s" % params
+        app.config['SQLALCHEMY_DATABASE_URI'] = f"mssql+pyodbc:///?odbc_connect={params}"
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI_SQLITE']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
