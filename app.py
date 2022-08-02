@@ -1,5 +1,5 @@
 from flaskr import create_app
-from prediction.predict import cv_silhouette_scorer
+# from prediction.predict import cv_silhouette_scorer
 
 app=create_app()
 

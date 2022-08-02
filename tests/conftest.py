@@ -8,6 +8,7 @@ import os
 def app():
     db_fd, db_path = tempfile.mkstemp()
     os.environ['SQLALCHEMY_DATABASE_URI_SQLITE'] = "sqlite:///"+db_path
+    os.environ['SQLALCHEMY_DATABASE_MSSQL'] = ''
     # create the app with common test config
     app = create_app({"TESTING": 'True'})
 

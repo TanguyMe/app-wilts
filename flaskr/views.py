@@ -12,10 +12,12 @@ import re
 
 main = Blueprint('main', __name__)
 
+
 @main.route('/profile')
 @login_required
 def profile():
     return render_template('profile.html')
+
 
 @main.route('/users')
 @login_required
@@ -30,6 +32,7 @@ def users():
                                title='Users')
     return redirect(url_for('main.profile'))
 
+
 @main.route('/historique')
 @login_required
 def historique():
@@ -43,15 +46,19 @@ def historique():
                                title='Historique')
     return redirect(url_for('main.profile'))
 
+
 @main.route('/')
 def index():
     return redirect('/home')
+
 
 @main.route('/home')
 def home():
     return render_template('home.html')
 
+
 @main.route('/prediction', methods=['POST'])
+@login_required
 def prediction():
     list_playlists_id = request.values.get('list_playlists')
     list_tracks_id = request.values.get('list_tracks')
@@ -60,32 +67,35 @@ def prediction():
         list_tracks_id = list_tracks_id.split(",")
         results = []
         for comp in comparaison(list_playlists_id, list_tracks_id):
-            print("COMP: ", comp)
             if comp:
                 results.append(1)
             else:
                 results.append(0)
         for i in range(len(list_tracks_id)):
-            # create new user with the form data. Hash the password so plaintext version isn't saved.
+            # create new row in historique with the form data
             histo = Historique(userid=current_user.id, playlistsid=str(list_playlists_id), trackid=list_tracks_id[i],
                                prediction=results[i], date=datetime.today())
-            # add the new user to the database
+            # add the new row to the database
             db.session.add(histo)
             db.session.commit()
         return jsonify({"results": results})
+
 
 @main.route('/log')
 def login():
     return render_template('login.html')
 
+
 @main.route('/signup')
 def signup():
     return render_template('signup.html')
+
 
 @main.route('/logged')
 @login_required
 def logged():
     return render_template('logged.html')
+
 
 @main.route('/login', methods=['POST'])
 def login_post():
@@ -104,6 +114,7 @@ def login_post():
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
     return redirect(url_for('main.logged'))
+
 
 @main.route('/signup', methods=['POST'])
 def signup_post():
@@ -128,13 +139,15 @@ def signup_post():
     login_user(new_user, remember=remember)
     return redirect(url_for('main.logged'))
 
+
 @main.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
-@main.route('/list_playlists', methods=['GET', 'POST'])
+
+@main.route('/list_playlists', methods=['GET'])
 @login_required
 def list_playlists():
     list_playlists_id = []
@@ -157,9 +170,9 @@ def get_playlist_name():
     playlist_url = request.values.get('playlist')
     pattern_playlist = '(?<=playlist[:|/])[^?]*'
     if re.search(pattern_playlist, playlist_url):
-        playlist_id=re.search(pattern_playlist, playlist_url).group(0)
+        playlist_id = re.search(pattern_playlist, playlist_url).group(0)
     else:
-        playlist_id=playlist_url
+        playlist_id = playlist_url
     spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     playlist_name = spotify.playlist(playlist_id)['name']
     return jsonify({"playlist_id": playlist_id, "playlist_name": playlist_name})
@@ -179,28 +192,31 @@ def get_track_name():
     return jsonify({"track_id": track_id, "track_name": track_name})
 
 
-@main.route('/update', methods=['GET', 'POST'])
+@main.route('/update', methods=['POST'])
 @login_required
 def update():
     if request.form.get('userid'):
         userid = request.form.get('userid')
         if str(current_user.id) == userid or current_user.role == 'admin':
-            if request.method == 'POST':
-                return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
-                user.spotifyid = request.form.get('spotifyID')
-                db.session.commit()
-                if current_user.role == 'admin':
-                    return redirect(url_for('main.users'))
+            return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
+            # if request.method == 'POST':
+            #     return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
+                # user.spotifyid = request.form.get('spotifyID')
+                # db.session.commit()
+                # if current_user.role == 'admin':
+                #     return redirect(url_for('main.users'))
     if request.form.get('historiqueid'):
         historiqueid = request.form.get('historiqueid')
         if current_user.role == 'admin':
-            if request.method == 'POST':
-                return render_template('update_histo.html',
-                                       histo=db.session.query(Historique).filter(Historique.id == historiqueid).first())
-                if request.form.get("satisfaction"):
-                    histo.satisfaction = request.form.get("satisfaction")
-                db.session.commit()
-                return redirect(url_for('main.historique'))
+            return render_template('update_histo.html',
+                                   histo=db.session.query(Historique).filter(Historique.id == historiqueid).first())
+            # if request.method == 'POST':
+            #     return render_template('update_histo.html',
+            #                            histo=db.session.query(Historique).filter(Historique.id == historiqueid).first())
+                # if request.form.get("satisfaction"):
+                #     histo.satisfaction = request.form.get("satisfaction")
+                # db.session.commit()
+                # return redirect(url_for('main.historique'))
     return redirect(url_for('main.profile'))
 
 
@@ -208,7 +224,7 @@ def update():
 @login_required
 def update_user(userid):
     if str(current_user.id) == userid or current_user.role == 'admin':
-        user=db.session.query(User).filter(User.id == userid).first()
+        user = db.session.query(User).filter(User.id == userid).first()
         user.spotifyid = request.form.get('spotifyID')
         db.session.commit()
         if current_user.role == 'admin':
@@ -216,7 +232,7 @@ def update_user(userid):
     return redirect(url_for('main.profile'))
 
 
-@main.route('/delete_user/<userid>', methods=['POST', 'GET'])
+@main.route('/delete_user/<userid>', methods=['POST'])
 @login_required
 def delete_user(userid):
     if str(current_user.id) == userid or current_user.role == 'admin':
@@ -241,8 +257,10 @@ def update_histo(histoid):
         request_value = request.form.get('satisfaction')
         if request_value == 'None':
             request_value = None
+        elif request_value == 'False':
+            request_value = False
         else:
-            request_value = bool(request_value)
+            request_value = True
         histo.satisfaction = request_value
         db.session.commit()
         return redirect(url_for('main.historique'))
