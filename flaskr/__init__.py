@@ -1,8 +1,10 @@
 
 import os
+import sentry_sdk
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.security import generate_password_hash
 import urllib.parse
 
@@ -10,6 +12,18 @@ import urllib.parse
 db = SQLAlchemy()
 
 def create_app(config={}):
+    sentry_sdk.init(
+        dsn="https://ccb41a1d809b4aa9b00d5106e3a98f4e@o1344960.ingest.sentry.io/6621107",
+        integrations=[
+            FlaskIntegration(),
+        ],
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0
+    )
+
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
