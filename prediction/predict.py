@@ -1,12 +1,11 @@
 import spotipy
-import logging
 import pandas as pd
 from datetime import datetime
+from sentry_sdk import capture_exception
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import requests
 
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
-logger = logging.getLogger()
 
 
 # from sklearn import metrics
@@ -26,8 +25,7 @@ def extract_audio_feature(ids_list):
     try:
         list_features = spotify.audio_features(ids_list)
     except Exception as e:
-        print(e)
-        logger.info(e)
+        capture_exception(e)
     return list_features
 
 
@@ -86,7 +84,7 @@ def predict_playlist(list_playlist_id):
                 track_results = spotify.next(track_results)
             print(f"Progression of playlists: {list_playlist_id.index(playlist_id) + 1}/{len(list_playlist_id)}")
     except Exception as e:
-        logger.error(e)
+        capture_exception(e)
     end = datetime.now()
     print("finish = ", end)
     print("duration = ", (end - start).total_seconds())
@@ -111,7 +109,7 @@ def predict_track(track_ids: list):
             }
             tracks_data_list.append(single_track_dict)
     except Exception as e:
-        logger.error(e)
+        capture_exception(e)
     end = datetime.now()
     print("finish = ", end)
     print("duration = ", (end - start).total_seconds())
