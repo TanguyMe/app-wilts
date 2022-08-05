@@ -8,11 +8,22 @@
 </script>
 <div id="running" class="notification is-warning"> Please wait, your prediction is currently running !
     <span class="icon is-medium is-left">
-      <i class="fas fa-spinner"></i>
+      <i class="fas fa-spinner fa-pulse"></i>
     </span>
 </div>
 <div class="align-items-center" style="display: flex; justify-content: space-around; padding-bottom:25px">
     <a class="button is-info is-large" onclick=Predict()>Predict !</a>
+</div>
+<div class="notification is-info is-normal align-items-center ">
+    <p style="display: inline-block">Give us feedback on our prediction.</p>
+        <span class="icon has-text-success">
+          <i class="fas fa-check-square"></i>
+        </span>
+    <p style="display: inline-block"> if you agree, </p>
+        <span class="icon has-text-danger">
+          <i class="fas fa-ban"></i>
+        </span>
+    <p style="display: inline-block"> if you don't ! Thank you !</p>
 </div>
 <div class="columns">
   <div class="column">
@@ -151,6 +162,8 @@ function UpdateTracks(){
         if (list_tracks_pred[i] == 1){
           pred = '<span class="icon is-large"><i class="fas fa-thumbs-up"></i></span>'
         }
+        pred = pred + '<div class="icon has-text-success"><a class="button is-info is-small icon has-text-success" onclick="AddSatisfaction(\''+'True'+'\',\''+list_tracks_id[i]+'\')"><i class="fas fa-check-square"></i></a></div>' +
+            '<div class="icon has-text-danger"><a class="button is-info is-small icon has-text-danger" onclick="AddSatisfaction(\''+'False'+'\',\''+list_tracks_id[i]+'\')"><i class="fas fa-ban"></i></a></div>'
       };
       var html = '<div class="notification is-info">'+
       '<button onclick="RemoveTrack('+ i + ')"class="delete"></button>'+
@@ -188,6 +201,20 @@ function Predict() {
   }
   request.send(to_send);
 
+};
+
+function AddSatisfaction(satisfaction, track){
+  console.log(satisfaction);
+  console.log(track);
+  const request = new XMLHttpRequest();
+  request.open('POST', '/update_satisfaction');
+  request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  var to_send = "satisfaction="+satisfaction+"&track="+track;
+  request.onreadystatechange = function(res){
+        if (request.readyState == 4 && request.status == 200){
+        }
+  }
+  request.send(to_send);
 };
 
 </script>

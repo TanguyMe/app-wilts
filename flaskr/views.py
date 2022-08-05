@@ -267,6 +267,24 @@ def delete_histo(histoid):
     return redirect(url_for('main.profile'))
 
 
+@main.route('/update_satisfaction', methods=['POST'])
+@login_required
+def update_satisfaction():
+    satisfaction = request.form.get('satisfaction')
+    track = request.values.get('track')
+    histo = db.session.query(Historique).filter(Historique.trackid == track).order_by(Historique.date.desc()).first()
+    if satisfaction == 'None':
+        satisfaction = None
+    elif satisfaction == 'False':
+        satisfaction = False
+    else:
+        satisfaction = True
+    histo.satisfaction = satisfaction
+    db.session.commit()
+    return "Satisfaction update done"
+
+
+
 # https://github.com/charles-42/flask_tutorial/tree/master/channel_app
 # https://github.com/SprinTech/sound-recognizer/tree/backend/backend
 # https://github.com/pallets/flask/tree/2.0.3/examples/tutorial

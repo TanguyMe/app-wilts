@@ -314,3 +314,21 @@ def test_delete_histo(client):
         )
         assert response.status_code == 200
         assert not Historique.query.filter(Historique.id == 1).first()
+
+
+@pytest.mark.parametrize("satisfaction", ["True", "False", "None"])
+def test_update_satisfaction(client, satisfaction):
+    with client.application.app_context():
+        _create_user(client, "email2@gmail.com", "ka", "password", True)
+        list_playlists_id = "75Bn4tkz4dpUxcyss6X4xb, https://open.spotify.com/playlist/0yC9wHLQhqrwFT60RiQgVJ?si=45d190cac2554919"
+        list_tracks_id = "4dfprWJe7cI6yoZachjCwt"
+        to_send = dict(list_playlists=list_playlists_id, list_tracks=list_tracks_id)
+        client.post(
+            "/prediction", data=to_send, follow_redirects=True
+        )
+        to_send = dict(satisfaction=satisfaction, track=list_tracks_id)
+        response = client.post(
+            "/update_satisfaction", data=to_send, follow_redirects=True
+        )
+        assert response.status_code == 200
+        assert str(Historique.query.filter(Historique.id == 1).first().satisfaction) == satisfaction
