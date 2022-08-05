@@ -87,17 +87,20 @@ def test_login_user_success(client):
     _logout_user(client)
     _login_user(client, "email@gmail.com", "password")
 
+
 @pytest.mark.parametrize("path", ["profile", "logged", "list_playlists"])
 def test_logged(client, path):
     _create_user(client, "email2@gmail.com", "ka", "password", True)
     response = client.get(path)
     assert response.status_code == 200
 
+
 @pytest.mark.parametrize("path", ["historique", "users"])
 def test_access_admin(client, path):
     _login_user(client, os.environ['ADMIN_MAIL'], os.environ['ADMIN_PASSWORD'])
     response = client.get(path)
     assert response.status_code == 200
+
 
 @pytest.mark.parametrize("path", ["historique", "users"])
 def test_blocked_admin_access(client, path):

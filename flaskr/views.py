@@ -199,24 +199,11 @@ def update():
         userid = request.form.get('userid')
         if str(current_user.id) == userid or current_user.role == 'admin':
             return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
-            # if request.method == 'POST':
-            #     return render_template('update_user.html', user=db.session.query(User).filter(User.id == userid).first())
-                # user.spotifyid = request.form.get('spotifyID')
-                # db.session.commit()
-                # if current_user.role == 'admin':
-                #     return redirect(url_for('main.users'))
     if request.form.get('historiqueid'):
         historiqueid = request.form.get('historiqueid')
         if current_user.role == 'admin':
             return render_template('update_histo.html',
                                    histo=db.session.query(Historique).filter(Historique.id == historiqueid).first())
-            # if request.method == 'POST':
-            #     return render_template('update_histo.html',
-            #                            histo=db.session.query(Historique).filter(Historique.id == historiqueid).first())
-                # if request.form.get("satisfaction"):
-                #     histo.satisfaction = request.form.get("satisfaction")
-                # db.session.commit()
-                # return redirect(url_for('main.historique'))
     return redirect(url_for('main.profile'))
 
 
@@ -242,6 +229,7 @@ def delete_user(userid):
         db.session.delete(user)
         db.session.commit()
         try:
+            #Error occurs if the user did delete his account, current_user does not exist anymore
             if current_user.role == 'admin':
                 return redirect(url_for('main.users'))
         except:
