@@ -272,13 +272,13 @@ def delete_histo(histoid):
 def update_satisfaction():
     satisfaction = request.form.get('satisfaction')
     track = request.values.get('track')
-    histo = db.session.query(Historique).filter(Historique.trackid == track).order_by(Historique.date.desc()).first()
-    if satisfaction == 'None':
-        satisfaction = None
+    histo = db.session.query(Historique).filter(Historique.trackid == track, Historique.userid == current_user.id).order_by(Historique.date.desc()).first()
+    if satisfaction == 'True':
+        satisfaction = True
     elif satisfaction == 'False':
         satisfaction = False
     else:
-        satisfaction = True
+        satisfaction = None
     histo.satisfaction = satisfaction
     db.session.commit()
     return "Satisfaction update done"
