@@ -1,8 +1,7 @@
-from flask import Blueprint, Flask, render_template, request, redirect, url_for, jsonify, session, request, flash
+from flask import Blueprint, render_template, redirect, url_for, jsonify, request, flash
 from prediction.predict import comparaison
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from .model import User, Historique
@@ -282,9 +281,3 @@ def update_satisfaction():
     histo.satisfaction = satisfaction
     db.session.commit()
     return "Satisfaction update done"
-
-
-
-# https://github.com/charles-42/flask_tutorial/tree/master/channel_app
-# https://github.com/SprinTech/sound-recognizer/tree/backend/backend
-# https://github.com/pallets/flask/tree/2.0.3/examples/tutorial
