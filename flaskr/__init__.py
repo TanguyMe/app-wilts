@@ -29,7 +29,7 @@ def create_app(config={}):
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-    if os.environ['SQLALCHEMY_DATABASE_MSSQL']:
+    if os.environ.get['SQLALCHEMY_DATABASE_MSSQL']:
         params = urllib.parse.quote_plus(os.environ['SQLALCHEMY_DATABASE_MSSQL'])
         app.config['SQLALCHEMY_DATABASE_URI'] = f"mssql+pyodbc:///?odbc_connect={params}"
     else:
